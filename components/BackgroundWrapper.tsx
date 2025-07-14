@@ -21,7 +21,7 @@ interface BackgroundWrapperProps {
 
 export default function BackgroundWrapper({ 
   children, 
-  source = require('@/assets/images/background-.jpg'),
+  source = require('@/assets/images/3953918.jpg'),
   overlayOpacity = 0.85 
 }: BackgroundWrapperProps) {
   const { theme } = useTheme();

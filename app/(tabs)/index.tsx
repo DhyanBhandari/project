@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Text,
   Animated,
+  Image,
 } from 'react-native';
 import { MessageCircle, X } from 'lucide-react-native';
 import { carouselData, AUTO_SCROLL_INTERVAL } from '@/constants/carouselData';
@@ -15,6 +16,8 @@ import { useCarousel, useMenuModal } from '@/hooks/useCarousel';
 import ScreenLayout from '@/components/ScreenLayout';
 import BackgroundWrapper from '@/components/BackgroundWrapper';
 import AppHeader from '@/components/AppHeader';
+import DraggableMenuButton from '@/components/DraggableMenuButton';
+import DraggableLeftFABMenu from '@/components/DraggableLeftFABMenu';
 import Carousel from '@/components/Carousel';
 import ChatInput from '@/components/ChatInput';
 import SimpleChatInput from '@/components/SimpleChatInput';
@@ -98,7 +101,28 @@ export default function HomeScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <AppHeader onMenuPress={menuModal.handleMenuToggle} />
+            <View style={styles.logoSection}>
+              <Image
+                source={require('@/assets/images/logo-supe.png')}
+                style={styles.headerLogo}
+                resizeMode="contain"
+              />
+            </View>
+            
+            {/* Fixed Menu Button */}
+            <TouchableOpacity 
+              onPress={menuModal.handleMenuToggle} 
+              style={styles.fixedMenuButton}
+            >
+              <View style={styles.menuButtonContent}>
+                <Text style={[styles.menuButtonText, { color: theme.colors.text }]}>Menu</Text>
+                <View style={styles.menuIcon}>
+                  <View style={[styles.menuLine, { backgroundColor: theme.colors.text }]} />
+                  <View style={[styles.menuLine, { backgroundColor: theme.colors.text }]} />
+                  <View style={[styles.menuLine, { backgroundColor: theme.colors.text }]} />
+                </View>
+              </View>
+            </TouchableOpacity>
           </View>
 
           {/* Main Content */}
@@ -111,18 +135,6 @@ export default function HomeScreen() {
               scaleAnim={carousel.scaleAnim}
             />
           </View>
-
-          {/* Floating Chat Button */}
-          <TouchableOpacity
-            style={[styles.floatingChatButton, { backgroundColor: theme.colors.primary }]}
-            onPress={chat.openChatModal}
-            activeOpacity={0.8}
-          >
-            <MessageCircle size={28} color="white" />
-            <View style={styles.chatButtonBadge}>
-              <Text style={styles.badgeText}>AI</Text>
-            </View>
-          </TouchableOpacity>
 
           {/* Simple Chat Input - Still available at bottom */}
           <View style={styles.chatSection}>
@@ -193,6 +205,46 @@ const styles = StyleSheet.create({
   },
   header: {
     zIndex: 100,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  logoSection: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerLogo: {
+    width: 100,
+    height: 100,
+  },
+  fixedMenuButton: {
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  menuButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  menuButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  menuIcon: {
+    width: 18,
+    height: 12,
+    justifyContent: 'space-between',
+  },
+  menuLine: {
+    height: 2,
+    width: '100%',
+    borderRadius: 1,
   },
   content: {
     flex: 1,

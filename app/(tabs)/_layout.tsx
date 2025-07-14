@@ -9,7 +9,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { User, Heart, Rss } from 'lucide-react-native';
 import { View, StyleSheet, Image } from 'react-native';
 import CircularFABNavigation from '@/components/CircularFABNavigation';
-import LeftMiddleFABMenu from '@/components/LeftMiddleFABMenu';
+import DraggableLeftFABMenu from '@/components/DraggableLeftFABMenu';
 
 export default function TabLayout() {
   const { theme, currentTheme } = useTheme();
@@ -79,8 +79,8 @@ export default function TabLayout() {
         />
       </Tabs>
 
-      {/* Left-Middle FAB Navigation Overlay */}
-      <LeftMiddleFABMenu />
+      {/* Draggable FAB Navigation Overlay */}
+      <DraggableLeftFABMenu />
     </View>
   );
 }

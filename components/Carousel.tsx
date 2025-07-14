@@ -1,11 +1,3 @@
-// src/components/Carousel.tsx
-
-/**
- * @file components/Carousel.tsx
- * @description Reusable carousel component with 1-second auto-scroll
- * @features - Auto-scroll every 1 second, smooth animations, gradient styling
- */
-
 import React, { useRef, useEffect } from 'react';
 import {
   View,
@@ -26,8 +18,8 @@ interface CarouselProps {
   onIndexChange: (index: number) => void;
   fadeAnim: Animated.Value;
   scaleAnim: Animated.Value;
-  autoScrollInterval?: number; // Optional prop to control auto-scroll timing
-  enableAutoScroll?: boolean; // Optional prop to enable/disable auto-scroll
+  autoScrollInterval?: number;
+  enableAutoScroll?: boolean;
 }
 
 export default function Carousel({ 
@@ -36,28 +28,39 @@ export default function Carousel({
   onIndexChange, 
   fadeAnim, 
   scaleAnim,
-  autoScrollInterval = 1000, // Default 1 second (1000ms)
-  enableAutoScroll = true, // Auto-scroll enabled by default
+  autoScrollInterval = 4000, // Changed to 4 seconds
+  enableAutoScroll = true,
 }: CarouselProps) {
   const carouselRef = useRef<FlatList>(null);
   const autoScrollRef = useRef<number | null>(null);
+  const highlightAnim = useRef(new Animated.Value(1)).current;
 
-  // Auto-scroll effect with 1-second interval
   useEffect(() => {
-    if (!enableAutoScroll || data.length <= 1) {
-      return; // Don't auto-scroll if disabled or only one item
-    }
+    if (!enableAutoScroll || data.length <= 1) return;
 
-    // Clear any existing interval
     if (autoScrollRef.current) {
       clearInterval(autoScrollRef.current);
     }
 
-    // Set up new interval for auto-scrolling
+    // Start highlight animation
+    Animated.sequence([
+      Animated.timing(highlightAnim, {
+        toValue: 1,
+        duration: 500,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(highlightAnim, {
+        toValue: 0.3,
+        duration: 3500,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      })
+    ]).start();
+
     autoScrollRef.current = setInterval(() => {
       const nextIndex = (currentIndex + 1) % data.length;
       
-      // Trigger fade and scale animations
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0.3,
@@ -72,10 +75,8 @@ export default function Carousel({
           useNativeDriver: true,
         }),
       ]).start(() => {
-        // Change index after fade out
         onIndexChange(nextIndex);
         
-        // Fade back in with new content
         Animated.parallel([
           Animated.timing(fadeAnim, {
             toValue: 1,
@@ -93,7 +94,6 @@ export default function Carousel({
       });
     }, autoScrollInterval);
 
-    // Cleanup function
     return () => {
       if (autoScrollRef.current) {
         clearInterval(autoScrollRef.current);
@@ -101,7 +101,6 @@ export default function Carousel({
     };
   }, [currentIndex, data.length, enableAutoScroll, autoScrollInterval, fadeAnim, scaleAnim, onIndexChange]);
 
-  // Scroll to current index when it changes
   useEffect(() => {
     if (carouselRef.current && data.length > 0) {
       carouselRef.current.scrollToIndex({
@@ -111,7 +110,6 @@ export default function Carousel({
     }
   }, [currentIndex]);
 
-  // Handle scroll failure (e.g., if data loads after initial render)
   const handleScrollToIndexFailed = (info: {
     index: number;
     highestMeasuredFrameIndex: number;
@@ -128,67 +126,31 @@ export default function Carousel({
     });
   };
 
-  // Handle manual scroll (pause auto-scroll temporarily)
   const handleScrollBeginDrag = () => {
-    // Pause auto-scroll when user starts manual scrolling
     if (autoScrollRef.current) {
       clearInterval(autoScrollRef.current);
       autoScrollRef.current = null;
     }
   };
 
-  // Resume auto-scroll after manual scroll ends
   const handleMomentumScrollEnd = (event: any) => {
     const newIndex = Math.round(event.nativeEvent.contentOffset.x / width);
     if (newIndex !== currentIndex) {
       onIndexChange(newIndex);
     }
     
-    // Resume auto-scroll after a short delay
     setTimeout(() => {
       if (enableAutoScroll && data.length > 1) {
-        // Restart auto-scroll interval
         if (autoScrollRef.current) {
           clearInterval(autoScrollRef.current);
         }
         
         autoScrollRef.current = setInterval(() => {
           const nextIndex = (newIndex + 1) % data.length;
-          
-          Animated.parallel([
-            Animated.timing(fadeAnim, {
-              toValue: 0.3,
-              duration: 200,
-              easing: Easing.ease,
-              useNativeDriver: true,
-            }),
-            Animated.timing(scaleAnim, {
-              toValue: 0.9,
-              duration: 200,
-              easing: Easing.ease,
-              useNativeDriver: true,
-            }),
-          ]).start(() => {
-            onIndexChange(nextIndex);
-            
-            Animated.parallel([
-              Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 300,
-                easing: Easing.ease,
-                useNativeDriver: true,
-              }),
-              Animated.timing(scaleAnim, {
-                toValue: 1,
-                duration: 300,
-                easing: Easing.ease,
-                useNativeDriver: true,
-              }),
-            ]).start();
-          });
+          onIndexChange(nextIndex);
         }, autoScrollInterval);
       }
-    }, 2000); // Wait 2 seconds before resuming auto-scroll
+    }, 2000);
   };
 
   const renderCarouselItem = ({ item }: { item: CarouselItem }) => {
@@ -205,28 +167,35 @@ export default function Carousel({
             }
           ]}
         >
-          {/* Gradient Icon Container */}
-          <View style={[styles.iconContainer, {
+          <Animated.View style={[styles.iconContainer, {
             backgroundColor: item.gradient[0],
             shadowColor: item.gradient[0],
+            opacity: highlightAnim,
           }]}>
             <IconComponent 
-              size={item.isHighlighted ? 72 : 64} 
-              color="#ffffff"
-              strokeWidth={item.isHighlighted ? 2.5 : 2}
+              size={item.isHighlighted ? 76 : 68}
+              color="rgba(255,255,255,0.9)"
+              strokeWidth={item.isHighlighted ? 1.8 : 1.5}
             />
-          </View>
+            <Animated.View 
+              style={[
+                styles.iconHighlight,
+                {
+                  opacity: highlightAnim
+                }
+              ]} 
+            />
+          </Animated.View>
           
-          {/* Title Text */}
           <Text style={[styles.title, {
             fontSize: item.isHighlighted ? 38 : 32,
             fontWeight: item.isHighlighted ? '900' : '800',
             color: item.gradient[0],
+            opacity: 0.85
           }]}>
             {item.title}
           </Text>
           
-          {/* Featured Badge */}
           {item.isHighlighted && (
             <View style={styles.featuredBadge}>
               <Text style={styles.featuredText}>✨ FEATURED ✨</Text>
@@ -249,7 +218,6 @@ export default function Carousel({
         showsHorizontalScrollIndicator={false}
         snapToInterval={width}
         decelerationRate="fast"
-        
         getItemLayout={(data, index) => ({
           length: width,
           offset: width * index,
@@ -258,18 +226,11 @@ export default function Carousel({
         initialNumToRender={1}
         maxToRenderPerBatch={1}
         windowSize={3}
-
         onScrollToIndexFailed={handleScrollToIndexFailed}
         onScrollBeginDrag={handleScrollBeginDrag}
         onMomentumScrollEnd={handleMomentumScrollEnd}
       />
       
-      {/* Auto-scroll indicator */}
-      {enableAutoScroll && data.length > 1 && (
-        <View style={styles.autoScrollIndicator}>
-          <Text style={styles.indicatorText}>Auto-scrolling every {autoScrollInterval/1000}s</Text>
-        </View>
-      )}
     </View>
   );
 }
@@ -299,10 +260,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 15,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  iconHighlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 60,
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   title: {
     textAlign: 'center',

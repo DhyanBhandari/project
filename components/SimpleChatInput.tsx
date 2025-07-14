@@ -135,20 +135,10 @@ export default function SimpleChatInput() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
-      <Text style={[styles.label, { color: theme.colors.text }]}>
-        Chat with AI Assistant
-      </Text>
+    <View style={[]}>
       
-      {/* Messages Display Area */}
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.messagesContainer}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.messagesContent}
-      >
-        {messages.map(renderMessage)}
-      </ScrollView>
+      
+     
 
       {/* Input Area */}
       <View style={styles.inputRow}>
