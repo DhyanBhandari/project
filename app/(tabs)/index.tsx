@@ -12,10 +12,13 @@ import {
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { useMenuModal } from '@/hooks/useModal';
+import { useDrawer } from '@/hooks/useDrawer';
 import ScreenLayout from '@/components/ScreenLayout';
 import BackgroundWrapper from '@/components/BackgroundWrapper';
 import SimpleChatInput from '@/components/SimpleChatInput';
 import MenuModal from '@/components/MenuModal';
+import AnimatedNavbarDrawer from '@/components/AnimatedNavbarDrawer';
+import AnimatedMenuButton from '@/components/AnimatedMenuButton';
 import { useTheme } from '@/context/ThemeContext';
 
 // Enhanced hook for chat functionality with modal state
@@ -84,6 +87,7 @@ export default function HomeScreen() {
   const { theme } = useTheme();
   const chat = useSimpleChat();
   const menuModal = useMenuModal();
+  const navbarDrawer = useDrawer(); // New animated drawer hook
 
   return (
     <ScreenLayout>
@@ -102,30 +106,22 @@ export default function HomeScreen() {
               />
             </View>
             
-            {/* Fixed Menu Button */}
-            <TouchableOpacity 
-              onPress={menuModal.handleMenuToggle} 
-              style={styles.fixedMenuButton}
-            >
-              <View style={styles.menuButtonContent}>
-                <Text style={[styles.menuButtonText, { color: theme.colors.text }]}>Menu</Text>
-                <View style={styles.menuIcon}>
-                  <View style={[styles.menuLine, { backgroundColor: theme.colors.text }]} />
-                  <View style={[styles.menuLine, { backgroundColor: theme.colors.text }]} />
-                  <View style={[styles.menuLine, { backgroundColor: theme.colors.text }]} />
-                </View>
-              </View>
-            </TouchableOpacity>
+            {/* New Animated Menu Button */}
+            <AnimatedMenuButton
+              isOpen={navbarDrawer.isVisible}
+              onPress={navbarDrawer.toggle}
+              style={styles.animatedMenuButton}
+            />
           </View>
 
           {/* Main Content */}
           <View style={styles.content}>
             <View style={styles.welcomeContainer}>
               <Text style={[styles.welcomeTitle, { color: theme.colors.text }]}>
-                Welcome to Your App
+                Welcome to PLINK
               </Text>
               <Text style={[styles.welcomeSubtitle, { color: theme.colors.text, opacity: 0.7 }]}>
-                Start exploring and chatting below
+                Your global communication hub with beautiful animations
               </Text>
             </View>
           </View>
@@ -178,6 +174,7 @@ export default function HomeScreen() {
         </View>
       )}
 
+      {/* Original Menu Modal (you can keep both or remove this one) */}
       <MenuModal
         visible={menuModal.menuVisible}
         onClose={menuModal.handleMenuToggle}
@@ -187,6 +184,16 @@ export default function HomeScreen() {
         onModeSwitch={menuModal.handleModeSwitch}
         menuAnimation={menuModal.menuAnimation}
         backdropAnimation={menuModal.backdropAnimation}
+      />
+
+      {/* New Animated Navbar Drawer */}
+      <AnimatedNavbarDrawer
+        visible={navbarDrawer.isVisible}
+        onClose={navbarDrawer.close}
+        userInfo={{
+          name: 'PLINK User',
+          email: 'user@plink.app'
+        }}
       />
     </ScreenLayout>
   );
@@ -214,31 +221,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-  fixedMenuButton: {
-    padding: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  menuButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  menuButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  menuIcon: {
-    width: 18,
-    height: 12,
-    justifyContent: 'space-between',
-  },
-  menuLine: {
-    height: 2,
-    width: '100%',
-    borderRadius: 1,
+  animatedMenuButton: {
+    // Custom styling for the new animated menu button
   },
   content: {
     flex: 1,
@@ -266,38 +250,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 50,
-  },
-  floatingChatButton: {
-    position: 'absolute',
-    bottom: 120, // Above the simple chat input
-    right: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    zIndex: 200,
-  },
-  chatButtonBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: '#FF3B30',
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    minWidth: 20,
-    alignItems: 'center',
-  },
-  badgeText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: '600',
   },
   chatModalContainer: {
     position: 'absolute',

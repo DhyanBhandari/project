@@ -1,7 +1,7 @@
 /**
- * @file Header.tsx
- * @description Seamless header component without border separators
- * @features - No borders, seamless design with background
+ * @file components/Header.tsx
+ * @description Updated header component with animated drawer support
+ * @features - Seamless design, animated menu button integration
  * @developer Dhyan Bhandari
  */
 
@@ -11,19 +11,24 @@ import { BlurView } from 'expo-blur';
 import { ChevronLeft, Menu } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { router } from 'expo-router';
+import AnimatedMenuButton from './AnimatedMenuButton';
 
 interface HeaderProps {
   title: string;
   showBackButton?: boolean;
-  showMenuButton?: boolean;
+  showAnimatedMenu?: boolean;
+  isMenuOpen?: boolean;
   onMenuPress?: () => void;
+  showMenuButton?: boolean; // Legacy support
 }
 
 export default function Header({ 
   title, 
   showBackButton = false, 
-  showMenuButton = false,
-  onMenuPress 
+  showAnimatedMenu = false,
+  isMenuOpen = false,
+  onMenuPress,
+  showMenuButton = false, // Legacy prop
 }: HeaderProps) {
   const { theme, currentTheme } = useTheme();
 
@@ -60,7 +65,15 @@ export default function Header({
         {title}
       </Text>
       
-      {showMenuButton ? (
+      {showAnimatedMenu && onMenuPress ? (
+        <AnimatedMenuButton
+          isOpen={isMenuOpen}
+          onPress={onMenuPress}
+          size={40}
+          style={styles.headerMenuButton}
+        />
+      ) : showMenuButton && onMenuPress ? (
+        // Legacy menu button support
         <TouchableOpacity 
           onPress={onMenuPress}
           style={[styles.actionButton, { backgroundColor: theme.colors.card }]}
@@ -92,6 +105,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerMenuButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   title: {
     flex: 1,

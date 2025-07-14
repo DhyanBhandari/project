@@ -13,7 +13,9 @@ import {
 import { BlurView } from 'expo-blur';
 import { Search, Filter, ChevronDown, Star, Trash2, Heart } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
+import { useDrawer } from '@/hooks/useDrawer';
 import Header from '@/components/Header';
+import AnimatedNavbarDrawer from '@/components/AnimatedNavbarDrawer';
 
 interface FavoriteItem {
   id: number;
@@ -28,6 +30,7 @@ interface FavoriteItem {
 
 export default function FavoritesScreen() {
   const { theme, currentTheme } = useTheme();
+  const navbarDrawer = useDrawer(); // Add animated drawer
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [favorites, setFavorites] = useState<FavoriteItem[]>([
@@ -211,7 +214,13 @@ export default function FavoritesScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Header title="Favorites" showBackButton />
+      <Header 
+        title="Favorites" 
+        showBackButton 
+        showAnimatedMenu
+        isMenuOpen={navbarDrawer.isVisible}
+        onMenuPress={navbarDrawer.toggle}
+      />
 
       <View style={styles.content}>
         <View style={styles.searchContainer}>
@@ -269,10 +278,21 @@ export default function FavoritesScreen() {
           <EmptyState />
         )}
       </View>
+
+      {/* Animated Navbar Drawer */}
+      <AnimatedNavbarDrawer
+        visible={navbarDrawer.isVisible}
+        onClose={navbarDrawer.close}
+        userInfo={{
+          name: 'PLINK User',
+          email: 'user@plink.app'
+        }}
+      />
     </SafeAreaView>
   );
 }
 
+// Keep all existing styles...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
