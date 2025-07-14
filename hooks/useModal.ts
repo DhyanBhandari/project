@@ -1,68 +1,14 @@
 /**
- * @file hooks/useCarousel.ts
- * @description Custom hooks for carousel, chat input, and menu modal
+ * @file hooks/useModal.ts
+ * @description Custom hooks for chat input and menu modal
  */
 
 import { useState, useRef, useEffect } from 'react';
 import {
   Animated,
-  FlatList,
   Keyboard,
   EmitterSubscription,
 } from 'react-native';
-import { CarouselItem } from '../types/Carousel';
-
-//
-// ─── CAROUSEL HOOK ─────────────────────────────────────────────────────────────
-//
-
-export function useCarousel(data: CarouselItem[], interval: number = 4000) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const carouselRef = useRef<FlatList>(null);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    const autoScroll = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % data.length);
-    }, interval);
-
-    return () => clearInterval(autoScroll);
-  }, [data.length, interval]);
-
-  useEffect(() => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0.7,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1.05,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [currentIndex, fadeAnim, scaleAnim]);
-
-  return {
-    currentIndex,
-    setCurrentIndex,
-    carouselRef,
-    fadeAnim,
-    scaleAnim,
-  };
-}
 
 //
 // ─── CHAT INPUT HOOK ──────────────────────────────────────────────────────────

@@ -10,16 +10,10 @@ import {
   Animated,
   Image,
 } from 'react-native';
-import { MessageCircle, X } from 'lucide-react-native';
-import { carouselData, AUTO_SCROLL_INTERVAL } from '@/constants/carouselData';
-import { useCarousel, useMenuModal } from '@/hooks/useCarousel';
+import { X } from 'lucide-react-native';
+import { useMenuModal } from '@/hooks/useModal';
 import ScreenLayout from '@/components/ScreenLayout';
 import BackgroundWrapper from '@/components/BackgroundWrapper';
-import AppHeader from '@/components/AppHeader';
-import DraggableMenuButton from '@/components/DraggableMenuButton';
-import DraggableLeftFABMenu from '@/components/DraggableLeftFABMenu';
-import Carousel from '@/components/Carousel';
-import ChatInput from '@/components/ChatInput';
 import SimpleChatInput from '@/components/SimpleChatInput';
 import MenuModal from '@/components/MenuModal';
 import { useTheme } from '@/context/ThemeContext';
@@ -88,7 +82,6 @@ const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const { theme } = useTheme();
-  const carousel = useCarousel(carouselData, AUTO_SCROLL_INTERVAL);
   const chat = useSimpleChat();
   const menuModal = useMenuModal();
 
@@ -127,13 +120,14 @@ export default function HomeScreen() {
 
           {/* Main Content */}
           <View style={styles.content}>
-            <Carousel
-              data={carouselData}
-              currentIndex={carousel.currentIndex}
-              onIndexChange={carousel.setCurrentIndex}
-              fadeAnim={carousel.fadeAnim}
-              scaleAnim={carousel.scaleAnim}
-            />
+            <View style={styles.welcomeContainer}>
+              <Text style={[styles.welcomeTitle, { color: theme.colors.text }]}>
+                Welcome to Your App
+              </Text>
+              <Text style={[styles.welcomeSubtitle, { color: theme.colors.text, opacity: 0.7 }]}>
+                Start exploring and chatting below
+              </Text>
+            </View>
           </View>
 
           {/* Simple Chat Input - Still available at bottom */}
@@ -249,6 +243,22 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
+  },
+  welcomeContainer: {
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  welcomeTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 16,
+    letterSpacing: -0.5,
+  },
+  welcomeSubtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 24,
   },
   chatSection: {
     position: 'absolute',
