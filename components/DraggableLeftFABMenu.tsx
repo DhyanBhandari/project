@@ -1,6 +1,6 @@
 /**
  * @file components/JapaneseFanFABMenu.tsx
- * @description Expo Go compatible Japanese fan-style FAB menu
+ * @description Expo Go compatible Japanese fan-style FAB menu with darker background overlay
  */
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
@@ -460,7 +460,7 @@ export default function JapaneseFanFABMenu() {
 
   return (
     <>
-      {/* 95% Background Blur Overlay */}
+      {/* Darker Background Overlay - Reduced Brightness */}
       {isOpen && (
         <Animated.View
           style={[
@@ -469,12 +469,22 @@ export default function JapaneseFanFABMenu() {
           ]}
           pointerEvents="none" // BlurView shouldn't block touch events when just fading
         >
+          {/* Light Blur Effect */}
           <BlurView
             style={StyleSheet.absoluteFillObject}
-            intensity={95}
+            intensity={20}
             tint={currentTheme === 'dark' ? 'dark' : 'light'}
           />
-          <View style={styles.blurOverlay} />
+          
+          {/* Dark Overlay to Reduce Brightness */}
+          <View style={[
+            styles.darkOverlay,
+            {
+              backgroundColor: currentTheme === 'dark' 
+                ? 'rgba(0, 0, 0, 0.7)' // Darker overlay for dark theme
+                : 'rgba(0, 0, 0, 0.5)', // Medium dark overlay for light theme
+            }
+          ]} />
         </Animated.View>
       )}
 
@@ -736,11 +746,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  blurOverlay: {
-    // This is applied on top of the BlurView for extra opacity control
-    // if `intensity` alone isn't enough, or for a color tint.
-    // Make sure its background color is very subtle or fully transparent
-    // if you primarily rely on BlurView's `intensity`.
-    backgroundColor: 'rgba(0, 0, 0, 0.1)', // Example: a slight dark tint
+  darkOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    // Background color is set dynamically based on theme
   },
 });
